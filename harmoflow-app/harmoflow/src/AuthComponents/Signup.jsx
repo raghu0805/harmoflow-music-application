@@ -58,7 +58,7 @@ const Signup = () => {
           if(user){
             let docRef= doc(__DB,"userdata",user.uid);
             await setDoc(docRef,userData);
-            toast.info("Successfully data stored");
+          
             navigate("/login")
 
           }

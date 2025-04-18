@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Dope from "../../src/assets/music-listen-image.png"
 import Image from '../../src/assets/music-listen.jpeg'
 
@@ -11,13 +11,15 @@ import { FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { FacebookAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { __AUTH, __DB } from '../firebaseConfig/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { AuthContext } from '../Context/AuthContext';
 
 
 const Login = () => {
-  const hour = new Date().getHours();
+  let {userinformation}=useContext(AuthContext);
+  console.log(userinformation)
   let navigate=useNavigate()
   let [showPassword,setShowPassword]=useState(true)
   let [userDetails,setUserDetails]=useState({
@@ -38,17 +40,22 @@ const Login = () => {
     console.log(userDetails)
     try {
       //signInWithEmailAndPassword- it will check the email,hashed password in the auth. if it is there it will signup
-      let authResult = await signInWithEmailAndPassword(__AUTH, email, password);
-      console.log(authResult)
-      let user = authResult.user;
-      console.log(user.accessToken)
-      //store the accessToken in the localStorage
-      window.localStorage.setItem("User_Token_id",user.accessToken)
+       let result=await signInWithEmailAndPassword(__AUTH, email, password);
+      console.log(result.user.accessToken)
+    
+      onAuthStateChanged(result,()=>{
+          //store the accessToken in the localStorage
+       window.localStorage.setItem("User_Token_id",userinformation.accessToken);
+       toast.success("token stored successfully")
+       window.location.reload();
+       
+      })
+     
       //getting data from the firestore db
-      let docRef = doc(__DB, "userdata", user.uid);
+      let docRef = doc(__DB, "userdata", userinformation.uid);
       let docSnap = await getDoc(docRef);
       console.log("docSnap:",docSnap)
-      //if data is there the print the data
+      //if data is there then print the data
       if (docSnap.exists()) {
         console.log("User data:", docSnap.data());
       } else {
@@ -59,6 +66,7 @@ const Login = () => {
       toast.error(error.message);
     }
     // 
+   
   }
 
       let GoogleLogin=()=>{
@@ -69,7 +77,8 @@ const Login = () => {
             console.log(result.user.accessToken)
             console.log(result)
             //store the accessToken in the localStorage
-            window.localStorage.setItem("User_Token_id",result.user.accessToken)
+            window.localStorage.setItem("User_Token_id",result.user.accessToken);
+            
             let GoogleData={
               email:result.user.email,
               username:result.user.displayName
@@ -79,11 +88,12 @@ const Login = () => {
               let docRef= doc(__DB,"userdata",result.user.uid);
               console.log(result.user.uid);
               await setDoc(docRef,GoogleData);
-              toast.success("Data stored successfully")
+            
+              window.location.reload();
             }
           });
     
-          toast.success("login with google successfully");
+         
           navigate("/")
         } catch (error) {
           toast.error(error.message) 

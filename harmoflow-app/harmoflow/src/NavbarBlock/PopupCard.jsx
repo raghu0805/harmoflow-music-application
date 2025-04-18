@@ -19,6 +19,7 @@ const PopupCard = () => {
 
     })
     let handleClick=(mood)=>{
+      
         console.log(mood)
         let currentvalue=userMood[mood]
         console.log(userMood[mood])
@@ -26,10 +27,8 @@ const PopupCard = () => {
         console.log(userMood)
 
     }
-    useEffect(() => {
-        console.log("updated:", userMood);
-      }, [userMood]);
-    console.log(userMood)
+  
+
   return (
  
 
@@ -38,10 +37,11 @@ const PopupCard = () => {
         <h1 className='py-2 font-semibold px-4'>Current Mood</h1>
         <article className='flex flex-wrap p-2 gap-x-2'>
   {/* Positive / Uplifting */}
+  
   <span onClick={() => handleClick("happy")} className='border flex items-center p-2 gap-2 w-[145px] h-[30px] shadow drop-shadow-amber-50 rounded-md relative'>
     <div>😊</div>
     <h1>Happy</h1>
-    <div className="absolute right-0 h-[20px] bg-black rounded-full"><TiTick className=" text-xl text-white"/></div>
+    <div className="absolute right-0 h-[20px] bg-black rounded-full"><TiTick className=" text-xl text-white"/></div> 
     
   </span>
   <span className='flex items-center p-2 gap-2 w-[145px] h-[30px] shadow rounded-md'>
@@ -94,10 +94,11 @@ const PopupCard = () => {
     <div>😠</div>
     <h1>Angry</h1>
   </span>
+
 </article>
 
 
-        <button className="h-[30px] w-[145px] bg-black text-white rounded-md ml-20 mt-2 duration-150 hover:bg-gray-800 ">Continue</button>
+        <button  className="h-[30px] w-[145px] bg-black text-white rounded-md ml-20 mt-2 duration-150 hover:bg-gray-800 ">Continue</button>
     </section>
   )
 }
